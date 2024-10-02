@@ -1,21 +1,11 @@
 from fastapi import FastAPI
-from databases import Database
+from databases import Database 
 import sqlalchemy
+from handlers import users_handler
+from schemas.user import UserCreate
+from database import metadata, engine, database
 
-DATABASE_URL = 'postgresql://user:1234@localhost:5432/library'
-database = Database(DATABASE_URL)
-metadata = sqlalchemy.MetaData()
-
-users=sqlalchemy.Table(
-    "users",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("name", sqlalchemy.String(length=100)), 
-    sqlalchemy.Column("email", sqlalchemy.String(length=100), unique=True), 
-)
-
-engine = sqlalchemy.create_engine(DATABASE_URL)
-metadata.create_all(engine)
+metadata.create_all(bind=engine)
 
 app=FastAPI()
 
@@ -33,8 +23,8 @@ async def read_users():
    return await database.fetch_all(query)
 
 @app.post("/users/")
-async def create_user(name:str, email:str):
-   query = users.insert().values(name=name, email=email)
-   await database.execute(query)
-   return {"name": name, "email": email}
+async def create_user(user:UserCreate):
+    return await users_handler.create_user(user, database)
+
+
     
