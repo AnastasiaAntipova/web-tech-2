@@ -3,8 +3,8 @@ from database import metadata
 import enum
 
 class UserRole(enum.Enum):
-    user="user",
-    admin="admin",
+    user="user"
+    admin="admin"
     approved_user="approved_user"
 
 users = Table(
@@ -14,5 +14,5 @@ users = Table(
     Column("name", String(100), index=True),
     Column("email", String(100), unique=True, index=True),
     Column("hashed_password", String),
-    Column("role", Enum(UserRole), default=UserRole.user)
+    Column("role", Enum(UserRole), default=UserRole.user.value)
 )
