@@ -13,6 +13,7 @@ async def create_user(user, db):
     hashed_password = hash_password(user.password)
 
     role = user.role if hasattr(user, "role") and user.role else UserRole.user.value
+    
     query = insert(users).values(
         name = user.name,
         email = user.email,
@@ -36,7 +37,7 @@ async def authorize_user(user, db):
         raise HTTPException(status_code=400, detail = "User or password not correct")
     
     token = create_access_token(
-        data ={"sub": existing_user["name"], "role":existing_user["role"].value}
+        data ={"sub": existing_user["name"], "role":existing_user["role"].value, "id":existing_user["id"]}
     )
 
     return {"token":token}
