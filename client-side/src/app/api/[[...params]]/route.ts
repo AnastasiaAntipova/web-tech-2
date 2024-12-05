@@ -22,10 +22,12 @@ async function proxyRequest(req: NextRequest){
     try {
         const response = await fetch(targetUrl, {
             method: req.method,
-            body: req.body,
+            body: req.method === "GET" || req.method === "HEAD" ? null: req.body,
+            //body: req.body,
             headers: {
                 host: "http://localhost:8000/"
             },
+            //ts-ignore
             duplex: 'half'
         })
 
