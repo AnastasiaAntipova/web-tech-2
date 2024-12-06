@@ -4,6 +4,7 @@ import { useState } from "react";
 import {Box, Button, TextField, Typography, Container, CssBaseline, Alert, Avatar} from "@mui/material";
 import { LockOutlined as LockOutlinedIcon } from "@mui/icons-material";
 import { ApiClient } from "../api-client/ApiClient";
+import { useStore } from "../store/context";
 
 export default function LoginPage(){
 
@@ -11,22 +12,20 @@ export default function LoginPage(){
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
 
+    const {user} = useStore()
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setError(null);
 
-        const {data, error: apiError} = ApiClient.login(email, password)
+        const {data, error: apiError} = await ApiClient.login(email, password)
 
-        setError(apiError)
-        console.log(data)
-       /* try{ 
-            const result = await fetch("/api/users/authorize", {method: "POST", body: JSON.stringify({email, password})})
-            console.log(result)
-        } catch(e){
-            setError("Invalid email or password")
-        }
-            */
+        setError(apiError);
+        user.setUserToken(data.data.token)
+        
+     
     };
+    console.log(">>>>>>>>>>>>", user)
 
     return(
         <Container component="main" maxWidth="xs">
